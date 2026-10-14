@@ -4,9 +4,7 @@ import { ROUND_TIME_LIMIT_MS } from '../config';
 import { h, icon, shareLink } from '../util/dom';
 import { fmtDist, fmtInt, fmtTime } from '../util/format';
 import { randomSeed, seedLabel } from '../util/rng';
-import { unproject } from '../util/geo';
 import { navigate } from '../router';
-import { blockUrls, prefetch } from '../map/prefetch';
 import { getMap } from '../game/mapHost';
 import { createGameHud, revealRound, countUp, keyDir, isTyping, type GameHud } from '../game/hud';
 import { RoundRunner, type GhostRound } from '../game/round';
@@ -112,12 +110,6 @@ class Session {
     hud.modal.hidden = true;
     hud.scoreLbl.textContent = '0';
     const starts = roundStarts(this.cfg);
-    // Later rounds' start areas download in the background while round 1 is played.
-    for (const s of starts.slice(1)) {
-      const ll = unproject(s.x, s.y);
-      prefetch(blockUrls(ll.lat, ll.lng, Math.round(s.z), 2));
-    }
-
     for (let i = 0; i < this.cfg.rounds; i++) {
       hud.roundLbl.textContent = `Round ${i + 1}/${this.cfg.rounds}`;
       const gr = this.ghost?.rounds[i];

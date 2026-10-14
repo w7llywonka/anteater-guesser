@@ -58,7 +58,6 @@ class Backdrop {
       for (let x = 0; x < 4; x++) {
         const img = document.createElement('img');
         img.className = 'tl on';
-        img.crossOrigin = 'anonymous';
         img.alt = '';
         img.decoding = 'async';
         img.style.left = `${x * TILE}px`;
@@ -213,7 +212,6 @@ class TileLayer {
     const wx = ((tx % n) + n) % n;
     const tile: Tile = { img, tx, ty, done: false, started: false, url: this.src.url(lvl.z, wx, ty) };
     img.className = fade ? 'tl' : 'tl on';
-    img.crossOrigin = 'anonymous';
     img.alt = '';
     img.decoding = 'async';
     img.draggable = false;

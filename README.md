@@ -13,10 +13,8 @@ You get dropped at a random spot on land somewhere on Earth. Zoom, pan, find the
 - **Built for slow machines and slow internet:**
   - A custom satellite map engine with no mapping library, about 30 KB gzipped for the whole site.
   - Low / Balanced / High graphics presets.
-  - Tiles for zoom levels you skip past are never downloaded.
-  - The countdown waits for the map to finish loading.
-  - The whole planet at low zoom, plus the full dive down to the house, preloads in the background.
-  - A service worker keeps tiles on the device between visits.
+  - Only the tiles on screen are downloaded; tiles for zoom levels you skip past are never fetched.
+  - The countdown waits for the start view to finish loading, so a slow connection never costs clock time.
 
 ## Controls
 
@@ -52,12 +50,11 @@ Links can be edited by hand, so treat scores from links as friendly bragging rig
 ## Project layout
 
 ```
-src/map/       MapView (tile engine, gestures, fly-to), background prefetcher
+src/map/       MapView (tile engine, gestures, fly-to)
 src/game/      rounds, scoring, seeded drops, land masks, run codec, replays, HUD
 src/net/       peer-to-peer duel transport
 src/profile/   profile, levels, items, SVG anteater avatar, rewards
 src/screens/   home, play, replay/run pages, runs, locker, duel, settings
-public/sw.js   tile cache service worker
 ```
 
 ## Credits

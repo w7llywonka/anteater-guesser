@@ -5,9 +5,7 @@ import { DUEL_HURRY_MS, ROUND_TIME_LIMIT_MS, ZONES, type ZoneId } from '../confi
 import { h, icon, shareLink, toast } from '../util/dom';
 import { fmtDist, fmtInt, fmtTime } from '../util/format';
 import { randomCode, randomSeed } from '../util/rng';
-import { unproject } from '../util/geo';
 import { navigate } from '../router';
-import { blockUrls, prefetch } from '../map/prefetch';
 import { DuelNet, PROTOCOL, type Msg, type NetPlayer } from '../net/duel';
 import { getMap } from '../game/mapHost';
 import { createGameHud, revealRound, countUp, keyDir, isTyping, type GameHud } from '../game/hud';
@@ -437,10 +435,6 @@ class DuelGame {
   private async run() {
     const hud = this.hud;
     const starts = roundStarts(this.cfg);
-    for (const s of starts.slice(1)) {
-      const ll = unproject(s.x, s.y);
-      prefetch(blockUrls(ll.lat, ll.lng, Math.round(s.z), 2));
-    }
     for (let i = 0; i < this.cfg.rounds; i++) {
       this.round = i;
       hud.roundLbl.textContent = `Round ${i + 1}/${this.cfg.rounds}`;

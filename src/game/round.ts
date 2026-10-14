@@ -8,8 +8,6 @@ import { effectiveQuality, settings } from '../settings';
 import { sfx } from './sfx';
 import { pinEl } from './mapHost';
 import { TrackRecorder, pinAt, trackAt } from './replay';
-import { prefetchZoomOut, setPrefetchPaused } from '../map/prefetch';
-import { unproject } from '../util/geo';
 import type { PinEvent, RoundRecord } from './runs';
 
 export interface GhostRound {
@@ -77,8 +75,6 @@ export class RoundRunner {
     map.setView(start.x, start.y, start.z);
     ui.timer.textContent = fmtTime(0);
     ui.lockBtn.disabled = true;
-    const ll = unproject(start.x, start.y);
-    prefetchZoomOut(ll.lat, ll.lng, start.z);
     const cd = ui.countdown;
     cd.hidden = false;
     cd.textContent = 'Loading map…';
@@ -114,7 +110,6 @@ export class RoundRunner {
     this.t0 = performance.now();
     this.rec.push(0, map.cam);
     map.interactive = true;
-    setPrefetchPaused(true);
     map.onMove = (cam) => {
       const t = performance.now() - this.t0;
       this.rec.push(t, cam);
@@ -193,7 +188,6 @@ export class RoundRunner {
   }
 
   private teardown() {
-    setPrefetchPaused(false);
     cancelAnimationFrame(this.raf);
     this.cdTimers.forEach(clearTimeout);
     this.cdTimers = [];

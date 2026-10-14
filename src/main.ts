@@ -7,7 +7,6 @@ import { settingsScreen } from './screens/settings';
 import { dailyConfig, type GameConfig } from './game/modes';
 import { parseSeedLabel, randomSeed } from './util/rng';
 import { ZONES, type ZoneId } from './config';
-import { prefetchGoldenPath } from './map/prefetch';
 
 applyRootClasses();
 
@@ -35,10 +34,11 @@ function parseCfg(q: URLSearchParams): GameConfig {
 
 startRouter(document.getElementById('app')!);
 
-// Keep tiles on disk between visits, then quietly preload the world view and the whole
-// zoom path down to the house once the page is idle.
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => void navigator.serviceWorker.register('./sw.js').catch(() => {}));
+// Earlier builds installed a tile-caching service worker. Remove it and its saved tiles:
+// the map now only downloads what is on screen.
+if ('serviceWorker' in navigator) {
+  void navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => void r.unregister()));
 }
-const idle = (window as Window & { requestIdleCallback?: (f: () => void, o?: { timeout: number }) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 1500));
-idle(prefetchGoldenPath, { timeout: 4000 });
+if ('caches' in window) {
+  void caches.keys().then((keys) => keys.filter((k) => k.startsWith('ag-')).forEach((k) => void caches.delete(k)));
+}
