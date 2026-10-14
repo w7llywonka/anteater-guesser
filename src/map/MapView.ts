@@ -25,6 +25,8 @@ interface TileSource {
   cls: string;
   /** Extra level bias. Labels lean towards the lower level so text renders larger. */
   bias?: number;
+  /** Never show a stale level underneath (stretched label text looks broken). */
+  solo?: boolean;
 }
 
 interface Tile { img: HTMLImageElement; tx: number; ty: number; done: boolean; started: boolean; url: string }
@@ -46,8 +48,46 @@ const HIRES_Y0 = mercY(HIRES_BOX.maxLat);
 const HIRES_Y1 = mercY(HIRES_BOX.minLat);
 
 const IMAGERY: TileSource = { url: imageryUrl, minZoom: 0, maxZoom: (c) => (inHiRes(c) ? 20 : 19), cls: 'img' };
-const PLACES: TileSource = { url: placesUrl, minZoom: 0, maxZoom: () => 19, cls: 'lbl', bias: -0.35 };
-const ROADS: TileSource = { url: roadsUrl, minZoom: 5, maxZoom: () => 19, cls: 'lbl', bias: -0.35 };
+const PLACES: TileSource = { url: placesUrl, minZoom: 0, maxZoom: () => 19, cls: 'lbl', bias: -0.35, solo: true };
+const ROADS: TileSource = { url: roadsUrl, minZoom: 5, maxZoom: () => 19, cls: 'lbl', bias: -0.35, solo: true };
+
+/**
+ * Whole-world z2 mosaic (16 small tiles, loaded once) under everything, so zooming out
+ * faster than tiles can load shows blurry Earth instead of black.
+ */
+class Backdrop {
+  readonly el: HTMLDivElement;
+  constructor() {
+    this.el = document.createElement('div');
+    this.el.className = 'tlvl backdrop';
+    for (let y = 0; y < 4; y++) {
+      for (let x = 0; x < 4; x++) {
+        const img = document.createElement('img');
+        img.className = 'tl on';
+        img.alt = '';
+        img.decoding = 'async';
+        img.style.left = `${x * TILE}px`;
+        img.style.top = `${y * TILE}px`;
+        img.src = imageryUrl(2, x, y);
+        this.el.append(img);
+      }
+    }
+  }
+
+  position(cam: Camera, w: number, h: number) {
+    if (cam.z > 12) {
+      this.el.style.visibility = 'hidden';
+      return;
+    }
+    this.el.style.visibility = '';
+    const scale = 2 ** (cam.z - 2);
+    const S = TILE * 4;
+    // The world wraps: shift by whole worlds so the copy nearest the camera is drawn.
+    const tx = w / 2 + (Math.floor(cam.x) - cam.x) * S * scale;
+    const ty = h / 2 - cam.y * S * scale;
+    this.el.style.transform = `translate3d(${tx}px,${ty}px,0) scale(${scale})`;
+  }
+}
 
 class TileLayer {
   readonly el: HTMLDivElement;
@@ -109,7 +149,7 @@ class TileLayer {
       if (this.active) this.dropPending(this.active);
       this.active = lvl;
       for (const l of this.levels.values()) l.el.style.zIndex = String(l === lvl ? 64 : 32 - Math.abs(l.z - Z));
-      this.limitLevels(perf.maxLevels);
+      this.limitLevels(this.src.solo ? 1 : perf.maxLevels);
     }
 
     const n = 2 ** Z;
@@ -284,6 +324,7 @@ export class MapView {
   private pane: HTMLDivElement;
   private layers: TileLayer[] = [];
   private imagery: TileLayer;
+  private backdrop = new Backdrop();
   private labelLayers: TileLayer[];
   private labelsOn = false;
   private svg: SVGSVGElement;
@@ -323,7 +364,7 @@ export class MapView {
     this.imagery = new TileLayer(IMAGERY, () => this.perf);
     this.labelLayers = [new TileLayer(ROADS, () => this.perf), new TileLayer(PLACES, () => this.perf)];
     this.layers = [this.imagery];
-    this.pane.append(this.imagery.el);
+    this.pane.append(this.backdrop.el, this.imagery.el);
 
     this.svg = document.createElementNS(SVGNS, 'svg');
     this.svg.setAttribute('class', 'map-svg');
@@ -643,6 +684,7 @@ export class MapView {
       this.clamp();
       // Tiles first: a level created this frame must get its transform this frame too.
       this.scheduleTiles(now);
+      this.backdrop.position(cam, this.w, this.h);
       for (const l of this.layers) l.position(cam, this.w, this.h, this.dpr);
       this.refreshOverlays();
       this.onMove?.(cam);

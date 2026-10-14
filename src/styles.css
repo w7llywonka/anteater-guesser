@@ -1483,3 +1483,337 @@ table.rounds th:last-child {
   background: rgba(4, 7, 12, 0.35);
   z-index: 4;
 }
+
+/* ------------------------------------------------------------------ run page */
+
+.run-page {
+  max-width: 820px;
+}
+.center {
+  text-align: center;
+}
+.challenge-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border-radius: var(--r);
+  background: linear-gradient(90deg, rgba(255, 159, 67, 0.18), rgba(255, 210, 0, 0.1));
+  border: 1px solid rgba(255, 159, 67, 0.4);
+  color: var(--opp);
+}
+.challenge-banner b {
+  display: block;
+  color: var(--text);
+  font-size: 17px;
+}
+.challenge-banner small {
+  color: #d5deeb;
+}
+.run-card {
+  display: grid;
+  gap: 16px;
+}
+.run-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.run-head h1 {
+  margin: 0;
+  font-size: 26px;
+}
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+.av-wrap {
+  display: inline-flex;
+}
+.run-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.run-stats > div {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.run-stats small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+.run-stats b {
+  font: 850 22px/1.2 var(--mono);
+}
+
+/* ------------------------------------------------------------------ replay */
+
+.replay-bar {
+  position: absolute;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(720px, calc(100% - 24px));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line2);
+  box-shadow: var(--shadow);
+}
+.replay .sheet {
+  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 70px);
+}
+.sheet-inner.compact {
+  padding: 12px;
+  gap: 10px;
+}
+.scrub {
+  flex: 1;
+  min-width: 60px;
+  accent-color: var(--gold);
+}
+.round-chips {
+  display: flex;
+  gap: 4px;
+}
+.chip-btn {
+  padding: 5px 9px;
+  border-radius: 9px;
+  border: 1px solid var(--line2);
+  background: transparent;
+  color: var(--muted);
+  font: 700 12px var(--mono);
+  cursor: pointer;
+}
+.chip-btn.on {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+/* ------------------------------------------------------------------ runs list */
+
+.card h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+}
+table.pbs a {
+  color: var(--gold);
+  font-weight: 750;
+  text-decoration: none;
+}
+table.pbs a:hover {
+  text-decoration: underline;
+}
+.run-list {
+  display: grid;
+}
+.run-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 2px;
+  border-top: 1px solid var(--line);
+}
+.rr-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  min-width: 0;
+}
+.rr-main > div {
+  flex-basis: 100%;
+}
+.rr-actions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+
+/* ------------------------------------------------------------------ locker */
+
+.locker {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.locker-side {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+  position: sticky;
+  top: 72px;
+}
+.locker-side .name-input {
+  text-align: center;
+  margin: 0;
+}
+.locker-side .xp {
+  width: 100%;
+}
+.locker-preview {
+  display: inline-flex;
+}
+.slot-tabs {
+  margin-bottom: 14px;
+}
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 10px;
+}
+.item {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 12px 8px 10px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.item:hover {
+  border-color: var(--line2);
+  background: rgba(255, 255, 255, 0.06);
+}
+.item.on {
+  border-color: var(--gold);
+  background: rgba(255, 210, 0, 0.08);
+}
+.item.locked {
+  cursor: not-allowed;
+}
+.item.locked .item-art,
+.item.locked .pin-art,
+.item.locked .title-art {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+.item-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+.item-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--muted);
+  line-height: 1.2;
+}
+.item-art,
+.pin-art {
+  display: inline-flex;
+  height: 76px;
+  align-items: center;
+}
+.title-art {
+  display: grid;
+  place-items: center;
+  height: 76px;
+  padding: 0 6px;
+  color: var(--gold);
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+}
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+}
+.ach {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.ach b {
+  display: block;
+  font-size: 14px;
+}
+.ach small {
+  font-size: 12px;
+}
+.ach.got {
+  color: var(--text);
+  border-color: rgba(196, 168, 255, 0.35);
+  background: rgba(196, 168, 255, 0.08);
+}
+.ach-ic {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.ach.got .ach-ic {
+  color: var(--ghost);
+}
+
+@media (max-width: 760px) {
+  .locker {
+    grid-template-columns: 1fr;
+  }
+  .locker-side {
+    position: static;
+  }
+  .run-stats {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .run-stats b {
+    font-size: 17px;
+  }
+  .rr-actions span {
+    display: none;
+  }
+  .replay .hud-right {
+    display: none;
+  }
+  .round-chips {
+    display: none;
+  }
+}
+
+.backdrop {
+  z-index: 0;
+}
+.backdrop .tl {
+  transition: none;
+  width: 257px;
+  height: 257px;
+}
+.backdrop + .tlayer {
+  z-index: 1;
+}
+body:has(.game) .toasts {
+  top: 100px;
+}
