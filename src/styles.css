@@ -1827,3 +1827,305 @@ body:has(.game) .toasts {
   background: rgba(0, 0, 0, 0.6);
   text-shadow: none;
 }
+
+/* ------------------------------------------------------------------ duel */
+
+.duel-page {
+  max-width: 880px;
+}
+.room-code {
+  margin-left: auto;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(255, 210, 0, 0.12);
+  color: var(--gold);
+  font: 800 15px var(--mono);
+  letter-spacing: 0.12em;
+}
+.duel-landing {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  align-items: center;
+}
+.duel-landing .btn.lg {
+  margin-top: 6px;
+}
+.join-box {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--line);
+}
+.join-box h3 {
+  font-size: 15px;
+}
+.code-input {
+  flex: 1;
+  height: 42px;
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  text-align: center;
+}
+.err {
+  color: var(--bad);
+  font-weight: 650;
+  margin-top: 10px;
+}
+.duel-lobby {
+  display: grid;
+  gap: 18px;
+}
+.duel-vs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+.duel-vs .vs {
+  font: 900 28px/1 system-ui, sans-serif;
+  color: var(--gold);
+}
+.opp-slot {
+  position: relative;
+}
+.duel-player {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  text-align: center;
+  min-height: 190px;
+  align-content: center;
+}
+.duel-player b {
+  font-size: 17px;
+}
+.duel-player small {
+  color: var(--muted);
+}
+.duel-player.empty {
+  border-style: dashed;
+}
+.duel-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+.duel-settings small {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-weight: 650;
+  font-size: 12px;
+}
+.invite {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.invite code {
+  display: block;
+  margin-top: 4px;
+  font: 600 13px var(--mono);
+  color: #9fd0ff;
+  word-break: break-all;
+}
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid var(--line2);
+  border-top-color: var(--gold);
+  animation: spin 0.9s linear infinite;
+  margin: 6px auto;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.emote-bar {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+.emote {
+  min-width: 42px;
+  height: 38px;
+  padding: 0 8px;
+  border-radius: 11px;
+  border: 1px solid var(--line2);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  font: 800 17px system-ui, sans-serif;
+  cursor: pointer;
+}
+.emote:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.emote-bar.in-game {
+  position: absolute;
+  left: max(12px, env(safe-area-inset-left));
+  bottom: max(26px, env(safe-area-inset-bottom));
+  flex-direction: column;
+  pointer-events: auto;
+}
+.emote-float {
+  position: absolute;
+  right: 10px;
+  top: 100%;
+  pointer-events: none;
+}
+.emote-float.mine {
+  left: 100%;
+  right: auto;
+  top: auto;
+  bottom: 0;
+}
+.emote-pop {
+  display: block;
+  margin-top: 6px;
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: var(--panel-solid);
+  border: 1px solid var(--line2);
+  font: 800 22px system-ui, sans-serif;
+  white-space: nowrap;
+  animation: emote 2.2s ease-out forwards;
+}
+@keyframes emote {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  12% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-14px);
+    opacity: 0;
+  }
+}
+.opp-card {
+  position: relative;
+}
+.opp-card b {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--opp);
+}
+
+.banner {
+  position: absolute;
+  left: 50%;
+  top: 104px;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  border-radius: 99px;
+  background: rgba(255, 159, 67, 0.95);
+  color: #1a1206;
+  font-weight: 800;
+  font-size: 14px;
+  box-shadow: var(--shadow);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.duel-round {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.duel-round > div {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.duel-round > div:last-child {
+  background: rgba(255, 159, 67, 0.1);
+}
+.duel-round small {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.duel-cell b {
+  display: block;
+  font: 850 22px/1.2 var(--mono);
+}
+.duel-final {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+.df-side {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+.df-score {
+  font: 850 24px var(--mono);
+}
+.df-mid {
+  display: grid;
+  gap: 4px;
+}
+.df-mid small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.df-result {
+  font: 900 26px/1 system-ui, sans-serif;
+  letter-spacing: 0.04em;
+}
+.duel-final.win .df-result {
+  color: var(--gold);
+}
+.duel-final.loss .df-result {
+  color: var(--bad);
+}
+table.duel-table td.win {
+  color: var(--good);
+  font-weight: 750;
+}
+
+@media (max-width: 640px) {
+  .duel-landing {
+    grid-template-columns: 1fr;
+  }
+  .duel-player {
+    min-height: 150px;
+    padding: 10px;
+  }
+  .duel-player .av-wrap svg {
+    width: 64px;
+    height: 64px;
+  }
+  .emote-bar.in-game {
+    bottom: 96px;
+  }
+  .banner {
+    top: 76px;
+    font-size: 12px;
+  }
+  .invite {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
