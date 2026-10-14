@@ -708,6 +708,11 @@ kbd {
   position: absolute;
   inset: 0;
   contain: strict;
+  pointer-events: none;
+}
+.map img {
+  -webkit-user-drag: none;
+  user-select: none;
 }
 .tlayer {
   position: absolute;

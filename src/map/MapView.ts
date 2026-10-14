@@ -60,6 +60,7 @@ class Backdrop {
         img.className = 'tl on';
         img.alt = '';
         img.decoding = 'async';
+        img.draggable = false;
         img.style.left = `${x * TILE}px`;
         img.style.top = `${y * TILE}px`;
         img.src = imageryUrl(2, x, y);
@@ -864,6 +865,8 @@ export class MapView {
     );
 
     el.addEventListener('contextmenu', (e) => e.preventDefault());
+    // Stop the browser's native "drag this image" ghost from hijacking a pan.
+    el.addEventListener('dragstart', (e) => e.preventDefault());
     window.addEventListener('blur', this.onBlur);
   }
 
