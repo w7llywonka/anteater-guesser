@@ -23,6 +23,8 @@ interface TileSource {
   minZoom: number;
   maxZoom: (cam: Camera) => number;
   cls: string;
+  /** Extra level bias. Labels lean towards the lower level so text renders larger. */
+  bias?: number;
 }
 
 interface Tile { img: HTMLImageElement; tx: number; ty: number; done: boolean; started: boolean; url: string }
@@ -44,8 +46,8 @@ const HIRES_Y0 = mercY(HIRES_BOX.maxLat);
 const HIRES_Y1 = mercY(HIRES_BOX.minLat);
 
 const IMAGERY: TileSource = { url: imageryUrl, minZoom: 0, maxZoom: (c) => (inHiRes(c) ? 20 : 19), cls: 'img' };
-const PLACES: TileSource = { url: placesUrl, minZoom: 0, maxZoom: () => 19, cls: 'lbl' };
-const ROADS: TileSource = { url: roadsUrl, minZoom: 5, maxZoom: () => 19, cls: 'lbl' };
+const PLACES: TileSource = { url: placesUrl, minZoom: 0, maxZoom: () => 19, cls: 'lbl', bias: -0.35 };
+const ROADS: TileSource = { url: roadsUrl, minZoom: 5, maxZoom: () => 19, cls: 'lbl', bias: -0.35 };
 
 class TileLayer {
   readonly el: HTMLDivElement;
@@ -65,7 +67,7 @@ class TileLayer {
   /** Tile level to show for this camera, or -1 when the layer is hidden at this zoom. */
   levelFor(cam: Camera): number {
     if (cam.z < this.src.minZoom - 0.5) return -1;
-    const z = Math.round(cam.z + this.perf().tileBias);
+    const z = Math.round(cam.z + this.perf().tileBias + (this.src.bias ?? 0));
     return Math.max(this.src.minZoom, Math.min(this.src.maxZoom(cam), z));
   }
 
@@ -639,8 +641,9 @@ export class MapView {
     if (this.dirty) {
       this.dirty = false;
       this.clamp();
-      for (const l of this.layers) l.position(cam, this.w, this.h, this.dpr);
+      // Tiles first: a level created this frame must get its transform this frame too.
       this.scheduleTiles(now);
+      for (const l of this.layers) l.position(cam, this.w, this.h, this.dpr);
       this.refreshOverlays();
       this.onMove?.(cam);
     }

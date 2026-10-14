@@ -8,7 +8,6 @@ export interface GameConfig {
   mode: ModeId;
   zone: ZoneId;
   rounds: number;
-  labels: boolean;
   seed: number;
 }
 
@@ -17,12 +16,12 @@ export const ROUND_OPTIONS = [1, 3, 5] as const;
 /** Leaderboard bucket: runs only compete with runs that had identical rules. */
 export function categoryKey(c: GameConfig): string {
   const base = c.mode === 'daily' ? 'daily' : `drop-${c.zone}`;
-  return `${base}-${c.rounds}r${c.labels ? '-labels' : ''}`;
+  return `${base}-${c.rounds}r`;
 }
 
 export function categoryName(c: GameConfig): string {
   const m = c.mode === 'drop' ? (c.zone === 'world' ? MODES.drop.name : `Local Drop · ${ZONES[c.zone].name}`) : MODES[c.mode].name;
-  return `${m} · ${c.rounds} round${c.rounds > 1 ? 's' : ''}${c.labels ? ' · Labels' : ''}`;
+  return `${m} · ${c.rounds} round${c.rounds > 1 ? 's' : ''}`;
 }
 
 export function todayKey(d = new Date()): string {
@@ -35,7 +34,7 @@ export function dailyNumber(d = new Date()): number {
 }
 
 export function dailyConfig(d = new Date()): GameConfig {
-  return { mode: 'daily', zone: 'world', rounds: 3, labels: false, seed: hashString(`daily:${todayKey(d)}`) };
+  return { mode: 'daily', zone: 'world', rounds: 3, seed: hashString(`daily:${todayKey(d)}`) };
 }
 
 /**

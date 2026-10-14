@@ -48,7 +48,7 @@ export const ACHIEVEMENTS: Record<AchId, { name: string; desc: string }> = {
   ghost: { name: 'Ghostbuster', desc: 'Beat a ghost from a challenge link' },
   duel: { name: 'Duelist', desc: 'Win a live 1v1' },
   daily: { name: 'Daily Driver', desc: 'Finish a Daily Drop' },
-  local: { name: 'Murasaki Local', desc: 'World drop, 5 rounds, every pin on target, no labels' },
+  local: { name: 'Murasaki Local', desc: 'World Drop, 5 rounds, every pin on target' },
   marathon: { name: 'Marathoner', desc: 'Finish 50 games' },
 };
 

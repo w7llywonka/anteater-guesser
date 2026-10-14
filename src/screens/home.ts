@@ -11,18 +11,17 @@ import { targetThumb } from '../game/mapHost';
 import { profile, saveProfile, levelProgress, sanitizeName } from '../profile/profile';
 import { avatarSVG } from '../profile/avatar';
 import { item } from '../profile/items';
-import { settings } from '../settings';
 import { cfgToQuery } from './play';
 import { topbar } from './chrome';
 
-interface HomePrefs { rounds: number; labels: boolean; zone: Exclude<ZoneId, 'world'> }
+interface HomePrefs { rounds: number; zone: Exclude<ZoneId, 'world'> }
 
 export function homeScreen(root: HTMLElement) {
-  const prefs = load<HomePrefs>('home', { rounds: 1, labels: settings.labels, zone: 'city' });
+  const prefs = load<HomePrefs>('home', { rounds: 1, zone: 'city' });
   if ((prefs.zone as ZoneId) === 'world') prefs.zone = 'city';
   const persist = () => save('home', prefs);
 
-  const cfgFor = (zone: ZoneId): GameConfig => ({ mode: 'drop', zone, rounds: prefs.rounds, labels: prefs.labels, seed: randomSeed() });
+  const cfgFor = (zone: ZoneId): GameConfig => ({ mode: 'drop', zone, rounds: prefs.rounds, seed: randomSeed() });
   const go = (cfg: GameConfig) => navigate(`/play?${cfgToQuery(cfg)}`);
 
   // --- profile card
@@ -58,11 +57,6 @@ export function homeScreen(root: HTMLElement) {
       refreshPBs();
     },
   );
-  const labelsToggle = toggle('Map labels', 'Street & city names. Separate leaderboard.', prefs.labels, (v) => {
-    prefs.labels = v;
-    persist();
-    refreshPBs();
-  });
 
   // --- mode cards
   const worldPB = h('div', { class: 'pb-line' });
@@ -156,7 +150,7 @@ export function homeScreen(root: HTMLElement) {
         h('figure', { class: 'hero-target' }, targetThumb(220, 19), h('figcaption', null, icon('pin', 14), ' Your target, from 120 m up')),
       ),
       profileCard,
-      h('section', { class: 'opts card' }, h('div', null, h('h2', null, 'Game settings'), h('p', { class: 'muted' }, 'Applies to World and Local drops. Each combination keeps its own PBs.')), h('div', { class: 'opts-row' }, roundsSeg, labelsToggle)),
+      h('section', { class: 'opts card' }, h('div', null, h('h2', null, 'Rounds per game'), h('p', { class: 'muted' }, 'Each round is a new random drop. Points add up across the game.')), roundsSeg),
       h('h2', { class: 'section-h' }, 'Singleplayer'),
       h('section', { class: 'modes' }, worldCard, dropCard, dailyCard),
       h('h2', { class: 'section-h' }, '1v1'),

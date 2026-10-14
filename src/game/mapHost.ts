@@ -12,6 +12,8 @@ let map: MapView | null = null;
 export function getMap(host: HTMLElement): MapView {
   if (!map) {
     map = new MapView(host);
+    // Hybrid view: roads, highway shields, city and street names over the imagery.
+    map.setLabels(true);
     onSettingsChange(() => map?.setPerf(perfProfile()));
     // ?debug in the page URL exposes the map for automated tests.
     if (new URLSearchParams(location.search).has('debug')) (window as unknown as { __map: MapView }).__map = map;

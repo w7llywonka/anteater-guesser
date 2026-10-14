@@ -27,7 +27,6 @@ function parseCfg(q: URLSearchParams): GameConfig {
     mode: 'drop',
     zone: zone in ZONES ? zone : 'world',
     rounds,
-    labels: q.get('labels') === '1',
     // A seed only appears in hand-made practice links; normal runs are random every time.
     seed: parseSeedLabel(q.get('seed') ?? '') ?? randomSeed(),
   };

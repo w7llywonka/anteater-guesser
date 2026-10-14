@@ -62,7 +62,7 @@ const ZONES: ZoneId[] = ['world', 'socal', 'city', 'campus'];
 export function encodeRun(run: RunData): Uint8Array {
   const w = new Writer();
   w.u8(VERSION);
-  w.u8((run.cfg.labels ? 1 : 0) | (run.vs ? 2 : 0));
+  w.u8(run.vs ? 2 : 0);
   w.u8(MODES.indexOf(run.cfg.mode));
   w.u8(ZONES.indexOf(run.cfg.zone));
   w.u8(run.rounds.length);
@@ -183,7 +183,7 @@ export function decodeRun(bytes: Uint8Array): RunData {
     rounds.push({ time, pin, pins, track: decodeTrack(r) });
   }
   return {
-    cfg: { mode, zone, rounds: n, labels: !!(flags & 1), seed },
+    cfg: { mode, zone, rounds: n, seed },
     date,
     player: { name, level, av },
     vw,

@@ -26,7 +26,6 @@ export function cfgToQuery(cfg: GameConfig): string {
   // No seed in the URL: reloading or restarting always rolls a fresh random drop.
   const q = new URLSearchParams({ mode: cfg.mode, rounds: String(cfg.rounds) });
   if (cfg.mode === 'drop') q.set('zone', cfg.zone);
-  if (cfg.labels) q.set('labels', '1');
   return q.toString();
 }
 
@@ -128,7 +127,6 @@ class Session {
     );
     root.append(this.el);
     this.map = getMap(mapHost);
-    this.map.setLabels(this.cfg.labels);
     window.addEventListener('keydown', this.onKey);
     window.addEventListener('keyup', this.onKeyUp);
     void this.start();
@@ -317,7 +315,7 @@ class Session {
     award('flawless', sum.scores.some((s) => s.total >= 9_500));
     award('golden', c.rounds === 5 && sum.total >= 45_000);
     award('daily', c.mode === 'daily');
-    award('local', c.mode === 'drop' && c.zone === 'world' && c.rounds === 5 && !c.labels && sum.valid);
+    award('local', c.mode === 'drop' && c.zone === 'world' && c.rounds === 5 && sum.valid);
     award('marathon', profile.games >= 50);
     award('ghost', beatGhost);
     saveProfile();

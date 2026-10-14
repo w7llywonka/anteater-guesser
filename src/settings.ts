@@ -10,7 +10,6 @@ export interface Settings {
   oneClick: boolean;
   zoomSpeed: number;
   sound: boolean;
-  labels: boolean;
   showGhost: boolean;
 }
 
@@ -20,7 +19,6 @@ const DEFAULTS: Settings = {
   oneClick: false,
   zoomSpeed: 1,
   sound: true,
-  labels: false,
   showGhost: true,
 };
 
