@@ -29,10 +29,6 @@ const host = (x: number, y: number) => ((x + y) & 1 ? 'services' : 'server');
 
 export const imageryUrl = (z: number, x: number, y: number) =>
   `https://${host(x, y)}.${ESRI}/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
-export const placesUrl = (z: number, x: number, y: number) =>
-  `https://${host(x, y)}.${ESRI}/Reference/World_Boundaries_and_Places/MapServer/tile/${z}/${y}/${x}`;
-export const roadsUrl = (z: number, x: number, y: number) =>
-  `https://${host(x, y)}.${ESRI}/Reference/World_Transportation/MapServer/tile/${z}/${y}/${x}`;
 
 export const ATTRIBUTION = 'Imagery © Esri, Maxar, Earthstar Geographics, USDA, USGS, AeroGRID, IGN & the GIS User Community';
 

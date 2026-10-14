@@ -4,7 +4,7 @@
 // them on disk between visits. Paused while a round is being played so it never competes
 // with tiles that are actually on screen.
 
-import { imageryUrl, placesUrl, roadsUrl, TARGET } from '../config';
+import { imageryUrl, TARGET } from '../config';
 import { effectiveQuality } from '../settings';
 
 const queue: string[] = [];
@@ -62,8 +62,8 @@ function tileXY(lat: number, lng: number, z: number) {
   };
 }
 
-/** Imagery plus both label layers for a (2r+1)² block of tiles around a point. */
-export function blockUrls(lat: number, lng: number, z: number, r: number, labels = true): string[] {
+/** Imagery for a (2r+1)² block of tiles around a point. */
+export function blockUrls(lat: number, lng: number, z: number, r: number): string[] {
   const { x, y, n } = tileXY(lat, lng, z);
   const out: string[] = [];
   for (let dy = -r; dy <= r; dy++) {
@@ -72,10 +72,6 @@ export function blockUrls(lat: number, lng: number, z: number, r: number, labels
       if (ty < 0 || ty >= n) continue;
       const tx = (((x + dx) % n) + n) % n;
       out.push(imageryUrl(z, tx, ty));
-      if (labels && z <= 19) {
-        out.push(placesUrl(z, tx, ty));
-        if (z >= 5) out.push(roadsUrl(z, tx, ty));
-      }
     }
   }
   return out;
@@ -86,7 +82,7 @@ export function prefetchGoldenPath() {
   const urls: string[] = [];
   for (let z = 0; z <= 3; z++) {
     const n = 2 ** z;
-    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) urls.push(imageryUrl(z, x, y), placesUrl(z, x, y));
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) urls.push(imageryUrl(z, x, y));
   }
   for (let z = 4; z <= 20; z++) urls.push(...blockUrls(TARGET.lat, TARGET.lng, z, z >= 15 && z <= 18 ? 2 : 1));
   prefetch(urls);

@@ -8,7 +8,7 @@
 //  - The render loop only runs while something is moving, so an idle map costs nothing.
 //  - Quality presets trade sharpness for tile count on weak devices (see settings.ts).
 
-import { HIRES_BOX, MAX_ZOOM, ATTRIBUTION, imageryUrl, placesUrl, roadsUrl } from '../config';
+import { HIRES_BOX, MAX_ZOOM, ATTRIBUTION, imageryUrl } from '../config';
 import { perfProfile, settings, type PerfProfile } from '../settings';
 import type { Pt } from '../util/geo';
 
@@ -23,10 +23,6 @@ interface TileSource {
   minZoom: number;
   maxZoom: (cam: Camera) => number;
   cls: string;
-  /** Extra level bias. Labels lean towards the lower level so text renders larger. */
-  bias?: number;
-  /** Never show a stale level underneath (stretched label text looks broken). */
-  solo?: boolean;
 }
 
 interface Tile { img: HTMLImageElement; tx: number; ty: number; done: boolean; started: boolean; url: string }
@@ -48,8 +44,6 @@ const HIRES_Y0 = mercY(HIRES_BOX.maxLat);
 const HIRES_Y1 = mercY(HIRES_BOX.minLat);
 
 const IMAGERY: TileSource = { url: imageryUrl, minZoom: 0, maxZoom: (c) => (inHiRes(c) ? 20 : 19), cls: 'img' };
-const PLACES: TileSource = { url: placesUrl, minZoom: 0, maxZoom: () => 19, cls: 'lbl', bias: -0.35, solo: true };
-const ROADS: TileSource = { url: roadsUrl, minZoom: 5, maxZoom: () => 19, cls: 'lbl', bias: -0.35, solo: true };
 
 /**
  * Whole-world z2 mosaic (16 small tiles, loaded once) under everything, so zooming out
@@ -108,7 +102,7 @@ class TileLayer {
   /** Tile level to show for this camera, or -1 when the layer is hidden at this zoom. */
   levelFor(cam: Camera): number {
     if (cam.z < this.src.minZoom - 0.5) return -1;
-    const z = Math.round(cam.z + this.perf().tileBias + (this.src.bias ?? 0));
+    const z = Math.round(cam.z + this.perf().tileBias);
     return Math.max(this.src.minZoom, Math.min(this.src.maxZoom(cam), z));
   }
 
@@ -156,7 +150,7 @@ class TileLayer {
       if (this.active) this.dropPending(this.active);
       this.active = lvl;
       for (const l of this.levels.values()) l.el.style.zIndex = String(l === lvl ? 64 : 32 - Math.abs(l.z - Z));
-      this.limitLevels(this.src.solo ? 1 : perf.maxLevels);
+      this.limitLevels(perf.maxLevels);
     }
 
     const n = 2 ** Z;
@@ -333,8 +327,6 @@ export class MapView {
   private layers: TileLayer[] = [];
   private imagery: TileLayer;
   private backdrop = new Backdrop();
-  private labelLayers: TileLayer[];
-  private labelsOn = false;
   private svg: SVGSVGElement;
   private markerHost: HTMLDivElement;
   private markers = new Set<Marker>();
@@ -370,7 +362,6 @@ export class MapView {
     this.pane = document.createElement('div');
     this.pane.className = 'map-pane';
     this.imagery = new TileLayer(IMAGERY, () => this.perf);
-    this.labelLayers = [new TileLayer(ROADS, () => this.perf), new TileLayer(PLACES, () => this.perf)];
     this.layers = [this.imagery];
     this.pane.append(this.backdrop.el, this.imagery.el);
 
@@ -399,20 +390,6 @@ export class MapView {
     this.requestRender();
   }
 
-  setLabels(on: boolean) {
-    if (on === this.labelsOn) return;
-    this.labelsOn = on;
-    for (const l of this.labelLayers) {
-      if (on) this.pane.append(l.el);
-      else {
-        l.clear();
-        l.el.remove();
-      }
-    }
-    this.layers = on ? [this.imagery, ...this.labelLayers] : [this.imagery];
-    this.dirty = true;
-    this.requestRender();
-  }
 
   setView(x: number, y: number, z: number) {
     this.stopMotion();
@@ -644,7 +621,7 @@ export class MapView {
     cancelAnimationFrame(this.raf);
     clearTimeout(this.tileTimer);
     this.ro.disconnect();
-    for (const l of [this.imagery, ...this.labelLayers]) l.clear();
+    this.imagery.clear();
     window.removeEventListener('blur', this.onBlur);
     this.el.remove();
   }
