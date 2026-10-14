@@ -41,7 +41,7 @@ export function settingsScreen(root: HTMLElement) {
       h(
         'p',
         { class: 'muted small' },
-        'Everything (profile, runs, settings) is stored only in this browser. Imagery: Esri World Imagery (Maxar, Earthstar Geographics and the GIS user community).',
+        'Everything (profile, runs, settings) is stored only in this browser. Imagery: Esri World Imagery (Maxar, Earthstar Geographics and the GIS user community). House outline © OpenStreetMap contributors (ODbL). Land masks: Natural Earth.',
       ),
     ),
   );
