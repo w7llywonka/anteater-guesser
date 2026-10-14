@@ -15,6 +15,8 @@ import { profile, saveProfile, levelFromXp, levelProgress, newlyUnlocked, grantA
 import { ACHIEVEMENTS, SLOT_NAMES, type AchId } from '../profile/items';
 import { avatarSVG } from '../profile/avatar';
 import { navigate } from '../router';
+import { blockUrls, prefetch } from '../map/prefetch';
+import { unproject } from '../util/geo';
 import type { MapView, Marker, Shape } from '../map/MapView';
 
 export interface SessionOpts {
@@ -154,6 +156,11 @@ class Session {
     this.modal.hidden = true;
     this.scoreLbl.textContent = '0';
     const starts = roundStarts(this.cfg);
+    // Later rounds' start areas download in the background while round 1 is played.
+    for (const s of starts.slice(1)) {
+      const ll = unproject(s.x, s.y);
+      prefetch(blockUrls(ll.lat, ll.lng, Math.round(s.z), 2));
+    }
 
     for (let i = 0; i < this.cfg.rounds; i++) {
       this.roundLbl.textContent = `Round ${i + 1}/${this.cfg.rounds}`;

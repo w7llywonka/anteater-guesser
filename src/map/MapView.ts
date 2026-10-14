@@ -64,6 +64,7 @@ class Backdrop {
       for (let x = 0; x < 4; x++) {
         const img = document.createElement('img');
         img.className = 'tl on';
+        img.crossOrigin = 'anonymous';
         img.alt = '';
         img.decoding = 'async';
         img.style.left = `${x * TILE}px`;
@@ -113,6 +114,12 @@ class TileLayer {
 
   get activeZ() {
     return this.active?.z ?? -1;
+  }
+
+  /** True when the level this camera wants is active and fully downloaded. */
+  complete(cam: Camera): boolean {
+    const want = this.levelFor(cam);
+    return want < 0 || (!!this.active && this.active.z === want && this.active.pending === 0);
   }
 
   /** Every frame: reposition each level with one transform. */
@@ -212,6 +219,7 @@ class TileLayer {
     const wx = ((tx % n) + n) % n;
     const tile: Tile = { img, tx, ty, done: false, started: false, url: this.src.url(lvl.z, wx, ty) };
     img.className = fade ? 'tl' : 'tl on';
+    img.crossOrigin = 'anonymous';
     img.alt = '';
     img.decoding = 'async';
     img.draggable = false;
@@ -413,6 +421,19 @@ export class MapView {
     this.cam.z = z;
     this.dirty = true;
     this.requestRender();
+  }
+
+  /** Resolves once every visible tile layer has finished loading (or after the timeout). */
+  whenReady(timeoutMs = 8000): Promise<boolean> {
+    const t0 = performance.now();
+    return new Promise((resolve) => {
+      const check = () => {
+        if (this.layers.every((l) => l.complete(this.cam))) resolve(true);
+        else if (performance.now() - t0 > timeoutMs) resolve(false);
+        else setTimeout(check, 80);
+      };
+      setTimeout(check, 50);
+    });
   }
 
   /** Render synchronously (used by replays that drive the camera from their own loop). */

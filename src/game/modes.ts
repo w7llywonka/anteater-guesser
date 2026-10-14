@@ -60,15 +60,18 @@ export function roundStarts(cfg: GameConfig): Camera[] {
         lng = rnd() * 360 - 180;
       } while (!isLand(lat, lng) && ++tries < 200);
     } else {
-      // Uniform in an annulus so we never spawn right on top of the house.
+      // Uniform in an annulus so we never spawn right on top of the house; land only.
       const rMin = Math.min(0.8, zone.radiusKm * 0.2) * 1000;
       const rMax = zone.radiusKm * 1000;
-      const r = Math.sqrt(rMin * rMin + rnd() * (rMax * rMax - rMin * rMin));
-      const a = rnd() * Math.PI * 2;
-      ({ lat, lng } = offsetMeters(TARGET, Math.cos(a) * r, Math.sin(a) * r));
+      let tries = 0;
+      do {
+        const r = Math.sqrt(rMin * rMin + rnd() * (rMax * rMax - rMin * rMin));
+        const a = rnd() * Math.PI * 2;
+        ({ lat, lng } = offsetMeters(TARGET, Math.cos(a) * r, Math.sin(a) * r));
+      } while (!isLand(lat, lng) && ++tries < 200);
     }
     const p = project(lat, lng);
-    const z = zone.startZoom + Math.floor(rnd() * 5) * 0.5;
+    const z = zone.startZoom + Math.floor(rnd() * 4) * 0.5;
     out.push({ x: p.x, y: p.y, z });
   }
   return out;

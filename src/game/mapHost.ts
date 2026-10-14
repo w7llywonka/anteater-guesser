@@ -59,8 +59,8 @@ export function targetThumb(size = 112, z = 19): HTMLElement {
     for (let tx = Math.floor(left / 256); tx <= Math.floor((left + size) / 256); tx++) {
       const img = document.createElement('img');
       img.alt = '';
+      img.crossOrigin = 'anonymous';
       img.decoding = 'async';
-      img.loading = 'lazy';
       img.src = imageryUrl(z, tx, ty);
       img.style.left = `${tx * 256 - left}px`;
       img.style.top = `${ty * 256 - top}px`;

@@ -56,10 +56,10 @@ export interface Zone {
 }
 
 export const ZONES: Record<ZoneId, Zone> = {
-  world: { id: 'world', name: 'World', blurb: 'A random point anywhere on Earth', radiusKm: 0, startZoom: 10 },
-  socal: { id: 'socal', name: 'SoCal', blurb: 'Somewhere within 100 km', radiusKm: 100, startZoom: 13 },
-  city: { id: 'city', name: 'Irvine', blurb: 'Somewhere within 15 km', radiusKm: 15, startZoom: 15 },
-  campus: { id: 'campus', name: 'Campus', blurb: 'Within 4 km, zoomed in tight', radiusKm: 4, startZoom: 17 },
+  world: { id: 'world', name: 'World', blurb: 'A random spot on land anywhere on Earth', radiusKm: 0, startZoom: 5 },
+  socal: { id: 'socal', name: 'SoCal', blurb: 'Somewhere within 100 km', radiusKm: 100, startZoom: 9.5 },
+  city: { id: 'city', name: 'Irvine', blurb: 'Somewhere within 15 km', radiusKm: 15, startZoom: 12 },
+  campus: { id: 'campus', name: 'Campus', blurb: 'Within 4 km', radiusKm: 4, startZoom: 14 },
 };
 
 export const MODES: Record<ModeId, { name: string; blurb: string }> = {

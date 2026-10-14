@@ -8,6 +8,8 @@ import { effectiveQuality, settings } from '../settings';
 import { sfx } from './sfx';
 import { pinEl } from './mapHost';
 import { TrackRecorder, pinAt, trackAt } from './replay';
+import { prefetchZoomOut, setPrefetchPaused } from '../map/prefetch';
+import { unproject } from '../util/geo';
 import type { PinEvent, RoundRecord } from './runs';
 
 export interface GhostRound {
@@ -63,8 +65,11 @@ export class RoundRunner {
   }
 
   /** Shows the start view and counts down. Tiles preload during the countdown. */
-  /** 3-2-1-GO, one second per step. The map is fully locked until GO. */
-  countdown(steps = 3, stepMs = 1000): Promise<void> {
+  /**
+   * Waits until the start view has actually downloaded (so a slow connection never costs
+   * clock time), then 3-2-1-GO at one second per step. The map is fully locked until GO.
+   */
+  async countdown(steps = 3, stepMs = 1000): Promise<void> {
     const { map, ui, start } = this.o;
     map.interactive = false;
     map.stopMotion();
@@ -72,9 +77,15 @@ export class RoundRunner {
     map.setView(start.x, start.y, start.z);
     ui.timer.textContent = fmtTime(0);
     ui.lockBtn.disabled = true;
+    const ll = unproject(start.x, start.y);
+    prefetchZoomOut(ll.lat, ll.lng, start.z);
+    const cd = ui.countdown;
+    cd.hidden = false;
+    cd.textContent = 'Loading map…';
+    cd.className = 'countdown loading';
+    await map.whenReady(10_000);
+    if (this.done) return;
     return new Promise((res) => {
-      const cd = ui.countdown;
-      cd.hidden = false;
       for (let i = 0; i <= steps; i++) {
         this.cdTimers.push(
           window.setTimeout(() => {
@@ -103,6 +114,7 @@ export class RoundRunner {
     this.t0 = performance.now();
     this.rec.push(0, map.cam);
     map.interactive = true;
+    setPrefetchPaused(true);
     map.onMove = (cam) => {
       const t = performance.now() - this.t0;
       this.rec.push(t, cam);
@@ -181,6 +193,7 @@ export class RoundRunner {
   }
 
   private teardown() {
+    setPrefetchPaused(false);
     cancelAnimationFrame(this.raf);
     this.cdTimers.forEach(clearTimeout);
     this.cdTimers = [];
