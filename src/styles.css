@@ -1453,3 +1453,33 @@ table.rounds th:last-child {
     font-size: 28px;
   }
 }
+
+/* Countdown: the map is visible (tiles preload) but nothing can be touched until GO. */
+.game.counting .map-host,
+.game.counting .zoom-ctl,
+.game.counting .btn.lock {
+  pointer-events: none;
+}
+.game.counting .map-host::after {
+  content: 'Get ready';
+  position: absolute;
+  left: 50%;
+  top: calc(46% + clamp(60px, 11vw, 110px));
+  transform: translateX(-50%);
+  padding: 5px 14px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 13px;
+  z-index: 5;
+}
+.game.counting .map-host::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 7, 12, 0.35);
+  z-index: 4;
+}

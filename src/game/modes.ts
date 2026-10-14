@@ -1,6 +1,7 @@
 import { MODES, TARGET, ZONES, type ModeId, type ZoneId } from '../config';
 import { offsetMeters, project } from '../util/geo';
 import { hashString, mulberry32 } from '../util/rng';
+import { isLand } from './land';
 import type { Camera } from '../map/MapView';
 
 export interface GameConfig {
@@ -50,13 +51,15 @@ export function roundStarts(cfg: GameConfig): Camera[] {
     let lat: number;
     let lng: number;
     if (zone.radiusKm === 0) {
-      // Uniform on the sphere between 60°S and 72°N.
-      const u = rnd();
-      const v = rnd();
-      const s0 = Math.sin((-60 * Math.PI) / 180);
+      // Uniform on the sphere between 58°S and 72°N, rejecting open ocean so there is
+      // always something to look at. Deterministic: same seed, same drops.
+      const s0 = Math.sin((-58 * Math.PI) / 180);
       const s1 = Math.sin((72 * Math.PI) / 180);
-      lat = (Math.asin(s0 + (s1 - s0) * u) * 180) / Math.PI;
-      lng = v * 360 - 180;
+      let tries = 0;
+      do {
+        lat = (Math.asin(s0 + (s1 - s0) * rnd()) * 180) / Math.PI;
+        lng = rnd() * 360 - 180;
+      } while (!isLand(lat, lng) && ++tries < 200);
     } else {
       // Uniform in an annulus so we never spawn right on top of the house.
       const rMin = Math.min(0.8, zone.radiusKm * 0.2) * 1000;

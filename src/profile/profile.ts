@@ -40,8 +40,8 @@ export const sanitizeName = (s: string) => s.replace(/[\u0000-\u001f<>]/g, '').t
 
 // ---------------------------------------------------------------- levels
 
-const STEP = 250;
-/** Total XP required to reach level L. L2 = 500, L5 = 5,000, L10 = 22,500, L20 = 95,000. */
+const STEP = 400;
+/** Total XP required to reach level L. L2 = 800, L5 = 8,000, L10 = 36,000, L20 = 152,000. */
 export const xpForLevel = (L: number) => STEP * L * (L - 1);
 export const levelFromXp = (xp: number) => Math.max(1, Math.floor((1 + Math.sqrt(1 + (4 * xp) / STEP)) / 2));
 

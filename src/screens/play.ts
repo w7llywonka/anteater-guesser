@@ -117,8 +117,8 @@ class Session {
         h(
           'div',
           { class: 'zoom-ctl' },
-          h('button', { class: 'btn-icon', 'aria-label': 'Zoom in', onclick: () => this.map.zoomBy(1) }, icon('plus', 20)),
-          h('button', { class: 'btn-icon', 'aria-label': 'Zoom out', onclick: () => this.map.zoomBy(-1) }, icon('minus', 20)),
+          h('button', { class: 'btn-icon', 'aria-label': 'Zoom in', onclick: () => this.phase === 'playing' && this.map.zoomBy(1) }, icon('plus', 20)),
+          h('button', { class: 'btn-icon', 'aria-label': 'Zoom out', onclick: () => this.phase === 'playing' && this.map.zoomBy(-1) }, icon('minus', 20)),
         ),
         h('div', { class: 'hud-bottom' }, this.hint, this.lockBtn),
       ),
@@ -172,7 +172,9 @@ class Session {
       this.runner = runner;
       this.phase = 'countdown';
       this.el.classList.remove('revealing');
-      await runner.countdown(3, i === 0 ? 550 : 450);
+      this.el.classList.add('counting');
+      await runner.countdown(3, 1000);
+      this.el.classList.remove('counting');
       if (gen !== this.gen) return;
       this.phase = 'playing';
       const rec = await runner.play();
@@ -364,7 +366,7 @@ class Session {
       ),
     );
     this.modal.hidden = false;
-    if (unlocked.length) toast(`New gear unlocked: ${unlocked.map((u) => u.item.name).join(', ')}`, 'good', 4000);
+    if (unlocked.length) toast(unlocked.length === 1 ? `Unlocked: ${unlocked[0].item.name}. Equip it in the Locker` : `${unlocked.length} new items unlocked. Check the Locker`, 'good', 4000);
   }
 
   // ---------------------------------------------------------------- input

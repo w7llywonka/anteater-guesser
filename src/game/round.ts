@@ -63,9 +63,12 @@ export class RoundRunner {
   }
 
   /** Shows the start view and counts down. Tiles preload during the countdown. */
-  countdown(steps = 3, stepMs = 550): Promise<void> {
+  /** 3-2-1-GO, one second per step. The map is fully locked until GO. */
+  countdown(steps = 3, stepMs = 1000): Promise<void> {
     const { map, ui, start } = this.o;
     map.interactive = false;
+    map.stopMotion();
+    map.clearKeys();
     map.setView(start.x, start.y, start.z);
     ui.timer.textContent = fmtTime(0);
     ui.lockBtn.disabled = true;
